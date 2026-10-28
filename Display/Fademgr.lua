@@ -190,26 +190,18 @@ end
 ----------------------------------
 -- If the option to hide UI and to hide tooltip are ticked,
 -- user still needs to see the tooltip on an item or reward.
-do 	local function GameTooltipAlphaHandler(self)
-		if L('hideui') then
-			if L('hidetooltip') then
-				self:SetIgnoreParentAlpha(not self:IsOwned(UIParent))
-			else
-				self:SetIgnoreParentAlpha(true)
-			end
-			self:SetFrameStrata('TOOLTIP')
-			ShoppingTooltip1:SetFrameStrata('TOOLTIP')
-			ShoppingTooltip2:SetFrameStrata('TOOLTIP')
-		else
-			if (self:GetParent() ~= UIParent) then
-				self:SetParent(UIParent)
-				if (self:GetFrameStrata() ~= 'TOOLTIP') then
-					self:SetFrameStrata('TOOLTIP')
-					ShoppingTooltip1:SetFrameStrata('TOOLTIP')
-					ShoppingTooltip2:SetFrameStrata('TOOLTIP')
-				end
-			end
+do	local ShoppingTooltip1, ShoppingTooltip2 = _G.ShoppingTooltip1, _G.ShoppingTooltip2
+
+	local function GameTooltipAlphaHandler(self)
+		if not L('hideui') then return end
+
+		if self.SetIgnoreParentAlpha then
+			self:SetIgnoreParentAlpha(not L('hidetooltip') or not (self.IsOwned and self:IsOwned(UIParent)))
 		end
+
+		self:SetFrameStrata('TOOLTIP')
+		if ShoppingTooltip1 then ShoppingTooltip1:SetFrameStrata('TOOLTIP') end
+		if ShoppingTooltip2 then ShoppingTooltip2:SetFrameStrata('TOOLTIP') end
 	end
 
 	GameTooltip:HookScript('OnTooltipSetDefaultAnchor', GameTooltipAlphaHandler)
